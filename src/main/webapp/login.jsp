@@ -10,7 +10,7 @@
 <form action = "verifyLogin.jsp" method = "POST">
 Username: <input type = 'text' name ="username"/> <br/>
 Password: <input type = 'password' name = "password"/> <br/>
-<input type="submit" value = "Submit">
+<input type="submit" value = "Log In">
 </form>
 <p>
 Dont have an account?
