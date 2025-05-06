@@ -8,9 +8,14 @@ You are not logged in
 </br>
 
 <%
-} 
-else {
-response.sendRedirect("welcomePage.jsp");
+} else if (session.getAttribute("role").equals("Customer")) {
+response.sendRedirect("customerHome.jsp");
+} else if (session.getAttribute("role").equals("Representative")) {
+response.sendRedirect("repHome.jsp");
+
+} else if (session.getAttribute("role").equals("Administrator")) {
+response.sendRedirect("adminHome.jsp");
+
 }
 %>
 

@@ -17,7 +17,9 @@ ResultSet rs;
 rs = st.executeQuery("select * from account where username='" + userid + "' and password='" + pwd + "'");
 
 if (rs.next()){
+	String role = rs.getString("Role");
 	session.setAttribute("user", userid);
+	session.setAttribute("role", role);
 	out.println("welcome " + userid);
 	out.println("<a href = 'logout.jsp'>Log Out</a>");
 	response.sendRedirect("loginSucess.jsp");
