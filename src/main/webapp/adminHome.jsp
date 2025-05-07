@@ -23,7 +23,7 @@
 	<form action="adminTopCustomer.jsp" method="get">
 		<button type="submit">View Top Customer Revenue Generated</button>
 	</form>
-	<form action="adminActiveFligths.jsp" method="get">
+	<form action="adminActiveFlights.jsp" method="get">
 		<button type="submit">View Most Active Flights</button>
 	</form>
 
