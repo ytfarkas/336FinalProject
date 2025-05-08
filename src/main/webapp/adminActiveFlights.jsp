@@ -10,21 +10,22 @@
     <h2>Most Active Flights (Most Tickets Sold)</h2>
 
     <%
+    Connection con = null;
+    Statement st = null;
+    ResultSet rs = null;
     try {
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/336AirlineProject", "root", "mysqlpassword");
+        // Register the driver and establish the connection
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/336AirlineProject?useSSL=false&serverTimezone=UTC", "root", "mysqlpassword");
 
         // SQL query: count tickets per flight, order by ticket count descending
-        String query = "SELECT Flight_Number, COUNT(*) AS Tickets_Sold " +
-                       "FROM Reservation " +
-                       "GROUP BY Flight_Number " +
-                       "ORDER BY Tickets_Sold DESC";
+        String query = "SELECT Flight_Number, Tickets_Sold FROM Flight_Boards ORDER BY Tickets_Sold DESC";
 
-        Statement st = con.createStatement();
-        ResultSet rs = st.executeQuery(query);
+        st = con.createStatement();
+        rs = st.executeQuery(query);
 
         // Display results in an HTML table
-        out.println("<table>");
+        out.println("<table border='1'>");
         out.println("<tr><th>Flight Number</th><th>Tickets Sold</th></tr>");
 
         while (rs.next()) {
@@ -39,9 +40,17 @@
 
         out.println("</table>");
 
-        con.close();
     } catch (Exception e) {
         out.println("<p>Error: " + e.getMessage() + "</p>");
+    } finally {
+        try {
+            // Close all resources in the finally block
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null) con.close();
+        } catch (SQLException e) {
+            out.println("<p>Error closing resources: " + e.getMessage() + "</p>");
+        }
     }
     %>
 
