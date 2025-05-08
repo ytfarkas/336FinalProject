@@ -35,11 +35,9 @@
     PreparedStatement ps = null;
     ResultSet rs = null;
     try {
-        // Register the driver and establish the connection
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection("jdbc:mysql://localhost:3306/336AirlineProject?useSSL=false&serverTimezone=UTC", "root", "mysqlpassword");
 
-        // SQL query: count tickets per flight, order by ticket count descending
         String query = "SELECT MONTH(Departure_Date), SUM(Flight_Revenue) FROM Flight_Boards GROUP BY MONTH(Departure_Date) HAVING MONTH(Departure_Date) = ?";
 
         ps = con.prepareStatement(query);
@@ -66,7 +64,6 @@
         out.println("<p>Error: " + e.getMessage() + "</p>");
     } finally {
         try {
-            // Close all resources in the finally block
             if (rs != null) rs.close();
             if (ps != null) ps.close();
             if (con != null) con.close();
