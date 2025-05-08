@@ -14,11 +14,9 @@
     Statement st = null;
     ResultSet rs = null;
     try {
-        // Register the driver and establish the connection
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection("jdbc:mysql://localhost:3306/336AirlineProject?useSSL=false&serverTimezone=UTC", "root", "mysqlpassword");
 
-        // SQL query: get account numbers of customers and representatives
         String query = "SELECT * FROM Account WHERE Role = 'Customer' OR Role = 'Representative'";
 
         st = con.createStatement();
@@ -32,7 +30,7 @@
             String firstName = rs.getString("First_Name");
             String lastName = rs.getString("Last_Name");
             String username = rs.getString("Username");
-            String password = rs.getString("Password"); // You may want to hash or hide the password in the display
+            String password = rs.getString("Password");
             String ssn = rs.getString("SSN");
             String role = rs.getString("Role");
 
@@ -53,7 +51,6 @@
         out.println("<p>Error: " + e.getMessage() + "</p>");
     } finally {
         try {
-            // Close all resources in the finally block
             if (rs != null) rs.close();
             if (st != null) st.close();
             if (con != null) con.close();
