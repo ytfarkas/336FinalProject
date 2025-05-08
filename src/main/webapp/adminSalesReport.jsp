@@ -12,15 +12,15 @@
 <form action="adminSalesReport.jsp" method="POST">
     <label for="month">Choose a month:</label>
     <select name="month" id="month">
-        <option value="01">January</option>
-        <option value="02">February</option>
-        <option value="03">March</option>
-        <option value="04">April</option>
-        <option value="05">May</option>
-        <option value="06">June</option>
-        <option value="07">July</option>
-        <option value="08">August</option>
-        <option value="09">September</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
         <option value="10">October</option>
         <option value="11">November</option>
         <option value="12">December</option>
@@ -38,28 +38,19 @@
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection("jdbc:mysql://localhost:3306/336AirlineProject?useSSL=false&serverTimezone=UTC", "root", "mysqlpassword");
 
-        String query = "SELECT MONTH(Departure_Date), SUM(Flight_Revenue) FROM Flight_Boards GROUP BY MONTH(Departure_Date) HAVING MONTH(Departure_Date) = ?";
+        String query = "SELECT MONTH(Departure_Date) as Month, SUM(Flight_Revenue) as Total_Revenue FROM Flight_Boards GROUP BY Month HAVING Month = ?";
 
         ps = con.prepareStatement(query);
         ps.setString(1, month);
         rs = ps.executeQuery();
-
-        out.println("<h3>Sales Report for Month: " + month + "</h3>");
-        out.println("<table border='1'>");
-        out.println("<tr><th>Month</th><th>Total Revenue</th></tr>");
-
-        while (rs.next()) {
-            int monthNumber = rs.getInt("MONTH(Departure_Date)");
-            double totalRevenue = rs.getDouble("SUM(Flight_Revenue)");
-
-            out.println("<tr>");
-            out.println("<td>" + monthNumber + "</td>");
-            out.println("<td>$" + totalRevenue + "</td>");
-            out.println("</tr>");
+        
+        if (rs.next()) {
+            double totalRevenue = rs.getDouble("Total_Revenue");
+            out.println("<h3>Total revenue for month " + month + ": $" + totalRevenue + "</h3>");
+        } else {
+            out.println("<h3>No sales were made during month " + month + "</h3>");
         }
-
-        out.println("</table>");
-
+        
     } catch (Exception e) {
         out.println("<p>Error: " + e.getMessage() + "</p>");
     } finally {
