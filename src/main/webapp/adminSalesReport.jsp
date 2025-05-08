@@ -3,43 +3,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Sales Report</title>
+    <meta charset="UTF-8">
+    <title>Sales Report</title>
 </head>
 <body>
-<h2>Sales Report (Enter Month)</h2>
+    <h2>Sales Report (Enter Month)</h2>
 
-<form method="get">
-    Month (YYYY-MM): <input type="text" name="month">
-    <input type="submit" value="Get Report">
+<form action="adminSalesReport.jsp" method="POST">
+    <label for="month">Choose a month:</label>
+    <select name="month" id="month">
+        <option value="01">January</option>
+        <option value="02">February</option>
+        <option value="03">March</option>
+        <option value="04">April</option>
+        <option value="05">May</option>
+        <option value="06">June</option>
+        <option value="07">July</option>
+        <option value="08">August</option>
+        <option value="09">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+    </select><br><br>
+    <input type="submit" value="Generate Report">
 </form>
 
 <%
-String month = request.getParameter("month");
-if (month != null) {
+    String month = request.getParameter("month");
+
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
     try {
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/336AirlineProject", "root", "mysqlpassword");
+        // Register the driver and establish the connection
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/336AirlineProject?useSSL=false&serverTimezone=UTC", "root", "mysqlpassword");
 
-        String query = "SELECT SUM(Total_Fair) AS Total_Sales FROM Ticket WHERE DATE_FORMAT(Purchase_Date, '%m') LIKE ?";
-        PreparedStatement ps = con.prepareStatement(query);
-        ps.setString(1, month + "%");
-        ResultSet rs = ps.executeQuery();
+        // SQL query: count tickets per flight, order by ticket count descending
+        String query = "SELECT MONTH(Departure_Date), SUM(Flight_Revenue) FROM Flight_Boards GROUP BY MONTH(Departure_Date) HAVING MONTH(Departure_Date) = ?";
 
-        if (rs.next()) {
-            double totalSales = rs.getDouble("Total_Sales");
-            out.println("<h3>Total Sales for " + month + ": $" + totalSales + "</h3>");
-        } else {
-            out.println("<p>No sales for that month.</p>");
+        ps = con.prepareStatement(query);
+        ps.setString(1, month);
+        rs = ps.executeQuery();
+
+        out.println("<h3>Sales Report for Month: " + month + "</h3>");
+        out.println("<table border='1'>");
+        out.println("<tr><th>Month</th><th>Total Revenue</th></tr>");
+
+        while (rs.next()) {
+            int monthNumber = rs.getInt("MONTH(Departure_Date)");
+            double totalRevenue = rs.getDouble("SUM(Flight_Revenue)");
+
+            out.println("<tr>");
+            out.println("<td>" + monthNumber + "</td>");
+            out.println("<td>$" + totalRevenue + "</td>");
+            out.println("</tr>");
         }
 
-        con.close();
-    } catch (Exception e) {
-        out.println("Error: " + e.getMessage());
-    }
-}
-%>
+        out.println("</table>");
 
-<br><a href="adminHome.jsp">Back to Admin Dashboard</a>
+    } catch (Exception e) {
+        out.println("<p>Error: " + e.getMessage() + "</p>");
+    } finally {
+        try {
+            // Close all resources in the finally block
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (con != null) con.close();
+        } catch (SQLException e) {
+            out.println("<p>Error closing resources: " + e.getMessage() + "</p>");
+        }
+    }
+    %>
+
+    <br><a href="adminHome.jsp">Back to Admin Dashboard</a>
+
 </body>
 </html>
